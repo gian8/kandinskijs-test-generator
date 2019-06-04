@@ -1,0 +1,10 @@
+{
+  "name": "kandinskijs-test-generator",
+  "version": "0.0.1",
+  "main": "src/index.js",
+  "author": "Gianluca Mangiapelo",
+  "license": "MIT",
+  "dependencies": {
+    "css-tree": "^1.0.0-alpha.29"
+  }
+}
