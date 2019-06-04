@@ -1,3 +1,22 @@
 h2{
 	color:red;
+	background-color: black;
+}
+
+h1{
+	font-size: 16px;
+}
+
+@media screen and (min-width:660px){
+	h2 {
+		color: beige;
+	}
+}
+
+.test, .test-2{
+	margin-top:20px;
+}
+
+.t .l{
+	font-family: 'Courier New', Courier, monospace;
 }
