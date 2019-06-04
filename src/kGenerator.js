@@ -1,5 +1,6 @@
-var fs = require("fs");
-var csstree = require("css");
+const fs = require("fs");
+const csstree = require("css");
+const it = require("../src/utilities/itGenerator");
 
 module.exports = {
 	cssFile: undefined,
@@ -14,17 +15,27 @@ module.exports = {
 	},
 	generate: function (opts) {
 		//opts will be a set of key value functions
+		var wstream = fs.createWriteStream('demo/itOutput.js');
+		wstream.write("/*------------Test cases scaffolding----------------*/\n\n\r");
+		const itGen = new it(wstream);
+
 		var ast = csstree.parse(this.cssFile);
+
 		if (ast.stylesheet) {
+
 			ast.stylesheet.rules.forEach(function (rule) {
 
 				if (rule.type == "rule") {
 					rule.selectors.forEach(function (selector) {
 						console.log("selector: ", selector);
-						console.log(rule.declarations.forEach(function (declaration) {
+						var property, value;
+						rule.declarations.forEach(function (declaration) {
 							console.log("property: ", declaration.property);
 							console.log("value: ", declaration.value);
-						}))
+							property = declaration.property;
+							value = declaration.value;
+							itGen.generateIt(selector, property, value);
+						})
 					})
 				}
 
@@ -34,16 +45,17 @@ module.exports = {
 						if (rule.type == "rule") {
 							rule.selectors.forEach(function (selector) {
 								console.log("m-selector: ", selector);
-								console.log(rule.declarations.forEach(function (declaration) {
+								rule.declarations.forEach(function (declaration) {
 									console.log("m-property: ", declaration.property);
 									console.log("m-value: ", declaration.value);
-								}))
+								})
 							})
 						}
 					});
 				}
-
 			});
+
+			wstream.end();
 		}
 	}
 };
