@@ -1,10 +1,23 @@
 {
-  "name": "kandinskijs-test-generator",
-  "version": "0.0.1",
-  "main": "src/index.js",
-  "author": "Gianluca Mangiapelo",
-  "license": "MIT",
-  "dependencies": {
-    "css-tree": "^1.0.0-alpha.29"
-  }
+	"name": "kandinskijs-test-generator",
+	"version": "0.0.1",
+	"main": "src/kGenerator.js",
+	"author": "Gianluca Mangiapelo",
+	"license": "MIT",
+	"scripts": {
+		"test": "mocha test/*Test.js",
+		"demo": "node demo/demo-index.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/gian8/kandinskijs-test-generator.git"
+	},
+	"dependencies": {
+		"css-tree": "^1.0.0-alpha.29"
+	},
+	"devDependencies": {
+		"chai": "^4.1.2",
+		"mocha": "^5.2.0",
+		"sinon": "^7.2.7"
+	}
 }
