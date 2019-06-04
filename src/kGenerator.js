@@ -1,5 +1,5 @@
 var fs = require("fs");
-var csstree = require("css-tree");
+var csstree = require("css");
 
 module.exports = {
 	cssFile: undefined,
@@ -15,8 +15,35 @@ module.exports = {
 	generate: function (opts) {
 		//opts will be a set of key value functions
 		var ast = csstree.parse(this.cssFile);
-		if (ast.type != "StyleSheet") {
-			throw new Error("File is not StyleSheet format");
+		if (ast.stylesheet) {
+			ast.stylesheet.rules.forEach(function (rule) {
+
+				if (rule.type == "rule") {
+					rule.selectors.forEach(function (selector) {
+						console.log("selector: ", selector);
+						console.log(rule.declarations.forEach(function (declaration) {
+							console.log("property: ", declaration.property);
+							console.log("value: ", declaration.value);
+						}))
+					})
+				}
+
+				if (rule.type == "media") {
+					console.log(rule.media);
+					rule.rules.forEach(function (rule) {
+						if (rule.type == "rule") {
+							rule.selectors.forEach(function (selector) {
+								console.log("m-selector: ", selector);
+								console.log(rule.declarations.forEach(function (declaration) {
+									console.log("m-property: ", declaration.property);
+									console.log("m-value: ", declaration.value);
+								}))
+							})
+						}
+					});
+				}
+
+			});
 		}
 	}
 };
@@ -33,3 +60,6 @@ function createOutDir (outDir) {
 		fs.mkdirSync(outDir);
 	}
 };
+
+
+
