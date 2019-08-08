@@ -6,18 +6,20 @@
 	"license": "MIT",
 	"scripts": {
 		"test": "mocha test/*Test.js",
-		"demo": "node demo/demo-index.js"
+		"demo": "cross-env DEBUG=kandinskijs* node demo/demo-index.js"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/gian8/kandinskijs-test-generator.git"
 	},
 	"dependencies": {
+		"debug": "^4.1.1",
 		"css": "^2.2.4"
 	},
 	"devDependencies": {
 		"chai": "^4.1.2",
 		"mocha": "^5.2.0",
-		"sinon": "^7.2.7"
+		"sinon": "^7.2.7",
+		"cross-env": "^5.2.0"
 	}
 }

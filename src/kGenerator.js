@@ -1,5 +1,7 @@
 const fs = require("fs");
 const csstree = require("css");
+const debug = require("debug");
+const dbg = debug("kandinskijs:kGenerator");
 const it = require("../src/utilities/itGenerator");
 
 module.exports = {
@@ -27,11 +29,11 @@ module.exports = {
 
 				if (rule.type == "rule") {
 					rule.selectors.forEach(function (selector) {
-						console.log("selector: ", selector);
+						dbg("selector: ", selector);
 						var property, value;
 						rule.declarations.forEach(function (declaration) {
-							console.log("property: ", declaration.property);
-							console.log("value: ", declaration.value);
+							dbg("property: ", declaration.property);
+							dbg("value: ", declaration.value);
 							property = declaration.property;
 							value = declaration.value;
 							itGen.generateIt(selector, property, value);
@@ -40,14 +42,14 @@ module.exports = {
 				}
 
 				if (rule.type == "media") {
-					console.log(rule.media);
+					dbg(rule.media);
 					rule.rules.forEach(function (rule) {
 						if (rule.type == "rule") {
 							rule.selectors.forEach(function (selector) {
-								console.log("m-selector: ", selector);
+								dbg("m-selector: ", selector);
 								rule.declarations.forEach(function (declaration) {
-									console.log("m-property: ", declaration.property);
-									console.log("m-value: ", declaration.value);
+									dbg("m-property: ", declaration.property);
+									dbg("m-value: ", declaration.value);
 								})
 							})
 						}
