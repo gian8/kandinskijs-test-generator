@@ -11,10 +11,13 @@ h1{
 	h2 {
 		color: beige;
 	}
+	h3{
+		font-size: 26px;
+	}
 }
 
 .test, .test-2{
-	margin-top:20px;
+	margin-top:20%;
 }
 
 .t .l{
