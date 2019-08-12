@@ -3,9 +3,11 @@ const csstree = require("css");
 const debug = require("debug");
 const dbg = debug("kandinskijs:kGenerator");
 const it = require("../src/utilities/itGenerator");
+const ruleInterpreter = require("../src/utilities/ruleInterpreter");
 
 module.exports = {
 	cssFile: undefined,
+	interpreter: undefined,
 	outDir: "testSuite",
 	init: function (cssPath, outDir) {
 		if (!cssPath) {
@@ -14,51 +16,42 @@ module.exports = {
 		this.cssFile = getCssFile(cssPath);
 		this.outDir = outDir || this.outDir;
 		createOutDir(this.outDir);
+
+		this.interpreter = new ruleInterpreter(new it());
 	},
-	generate: function (opts) {
+	getRules: function (opts) {
 		//opts will be a set of key value functions
-		var wstream = fs.createWriteStream('demo/itOutput.js');
-		wstream.write("/*------------Test cases scaffolding----------------*/\n\n\r");
-		const itGen = new it(wstream);
-
 		var ast = csstree.parse(this.cssFile);
-
 		if (ast.stylesheet) {
-
-			ast.stylesheet.rules.forEach(function (rule) {
+			ast.stylesheet.rules.forEach(rule => {
 
 				if (rule.type == "rule") {
-					rule.selectors.forEach(function (selector) {
-						dbg("selector: ", selector);
-						var property, value;
-						rule.declarations.forEach(function (declaration) {
-							dbg("property: ", declaration.property);
-							dbg("value: ", declaration.value);
-							property = declaration.property;
-							value = declaration.value;
-							itGen.generateIt(selector, property, value);
-						})
-					})
+					this.interpreter.getRule(rule);
 				}
 
 				if (rule.type == "media") {
-					dbg(rule.media);
-					rule.rules.forEach(function (rule) {
-						if (rule.type == "rule") {
-							rule.selectors.forEach(function (selector) {
-								dbg("m-selector: ", selector);
-								rule.declarations.forEach(function (declaration) {
-									dbg("m-property: ", declaration.property);
-									dbg("m-value: ", declaration.value);
-								})
-							})
-						}
-					});
+					this.interpreter.getMediaquery(rule);
 				}
+
 			});
 
-			wstream.end();
+			let rulesByVw = this.interpreter.getRulesByViewport(this.interpreter._rules);
+			return rulesByVw;
 		}
+	},
+	generateTest: function (rules) {
+		let rulesByVw = this.getRules();
+
+		rulesByVw.forEach(r => {
+			const fileName = r.key.replace(/(:|\s|@)+/gm, "_");
+			const wstream = fs.createWriteStream(`${this.outDir}/${fileName}.js`);
+			wstream.write(`/*------------ Test cases scaffolding for ${r.key} viewport ----------------*/\n\n\r`);
+			r.value.forEach(v => {
+				const itGen = new it(wstream);
+				itGen.generateIt(v);
+			});
+			wstream.end();
+		});
 	}
 };
 
