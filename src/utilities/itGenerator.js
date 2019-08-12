@@ -1,16 +1,37 @@
 var fs = require("fs");
 
 module.exports = function (stream) {
-	return {
-		generateIt: function (selector, property, value) {
-			var it = `it("${selector} should have a ${property}: ${value}", async function() {
-      const selector = "${selector}";
-      const cssProperty = "${property}";
-      const val = await kisk.getCSSProperty(page, selector, cssProperty);
+	var generatePxIt = function (itClass) {
+		var it = `it("${itClass.selector} should have a ${itClass.property}: ${itClass.value}", async function() {
+		const selector = "${itClass.selector}";
+		const cssProperty = "${itClass.property}";
+		const val = await kisk.getCSSProperty(page, selector, cssProperty);
 
-      expect(val).to.eql("${value}");
-	});\n\r`;
-			stream.write(it);
+		expect(val).to.eql("${itClass.value}");
+});\n\r`;
+		stream.write(it);
+	};
+
+	var generatePctIt = function (itClass) {
+		var it = `it("${itClass.selector} should have a ${itClass.property}: ${itClass.value}", async function() {
+		const selector = "${itClass.selector}";
+		const cssProperty = "${itClass.property}";
+		const val = await kisk.getPctCSSProperty(page, selector, cssProperty);
+
+		expect(val).to.eql("${itClass.value}");
+});\n\r`;
+		stream.write(it);
+	};
+
+	return {
+		generateIt: function (itClass) {
+			if (itClass.valueType == "px") {
+				generatePxIt(itClass);
+			}
+
+			if (itClass.valueType == "perc") {
+				generatePctIt(itClass);
+			}
 		}
 	}
 };
