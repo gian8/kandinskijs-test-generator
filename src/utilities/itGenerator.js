@@ -1,37 +1,43 @@
-var fs = require("fs");
-
 module.exports = function (stream) {
-	var generatePxIt = function (itClass) {
-		var it = `it("${itClass.selector} should have a ${itClass.property}: ${itClass.value}", async function() {
-		const selector = "${itClass.selector}";
+  var sanitizeQuotes = function (value) {
+    value = value || "";
+    return value.replace(/"/gi, '\\"');
+  };
+  var generatePxIt = function (itClass) {
+    const sanitizedValue = sanitizeQuotes(itClass.value);
+    const sanitizedSelector = sanitizeQuotes(itClass.selector);
+    var it = `it("${sanitizedSelector} should have a ${itClass.property}: ${sanitizedValue}", async function() {
+		const selector = "${sanitizedSelector}";
 		const cssProperty = "${itClass.property}";
 		const val = await kisk.getCSSProperty(page, selector, cssProperty);
 
-		expect(val).to.eql("${itClass.value}");
+		expect(val).to.eql("${sanitizedValue}");
 });\n\r`;
-		stream.write(it);
-	};
+    stream.write(it);
+  };
 
-	var generatePctIt = function (itClass) {
-		var it = `it("${itClass.selector} should have a ${itClass.property}: ${itClass.value}", async function() {
-		const selector = "${itClass.selector}";
+  var generatePctIt = function (itClass) {
+    const sanitizedValue = sanitizeQuotes(itClass.value);
+    const sanitizedSelector = sanitizeQuotes(itClass.selector);
+    var it = `it("${sanitizedSelector} should have a ${itClass.property}: ${sanitizedValue}", async function() {
+		const selector = "${sanitizedSelector}";
 		const cssProperty = "${itClass.property}";
 		const val = await kisk.getPctCSSProperty(page, selector, cssProperty);
 
-		expect(val).to.eql("${itClass.value}");
+		expect(val).to.eql("${sanitizedValue}");
 });\n\r`;
-		stream.write(it);
-	};
+    stream.write(it);
+  };
 
-	return {
-		generateIt: function (itClass) {
-			if (itClass.valueType == "px") {
-				generatePxIt(itClass);
-			}
+  return {
+    generateIt: function (itClass) {
+      if (itClass.valueType == "px") {
+        generatePxIt(itClass);
+      }
 
-			if (itClass.valueType == "perc") {
-				generatePctIt(itClass);
-			}
-		}
-	}
+      if (itClass.valueType == "perc") {
+        generatePctIt(itClass);
+      }
+    },
+  };
 };
