@@ -46,10 +46,26 @@ module.exports = {
 			const fileName = r.key.replace(/(:|\s|@)+/gm, "_");
 			const wstream = fs.createWriteStream(`${this.outDir}/${fileName}.js`);
 			wstream.write(`/*------------ Test cases scaffolding for ${r.key} viewport ----------------*/\n\n\r`);
+			//describe
+			wstream.write(`const kisk = require("kandinskijs");\n\n\r`);
+			wstream.write(`describe("${r.key} css test", function() {
+				const url = "${process.env.URL}";
+				const localCssPath = "${process.env.CSS_PATH}";
+
+				before(async function() {
+					await kisk.init(this, url, localCssPath);
+					await kisk.getPage({ width: 320, height: 568 });
+				});
+
+				after(async function() {
+					await kisk.destroy();
+					await kisk.closePage();
+				});\n\n\r`);
 			r.value.forEach(v => {
 				const itGen = new it(wstream);
 				itGen.generateIt(v);
 			});
+			wstream.write("});");
 			wstream.end();
 		});
 	}
